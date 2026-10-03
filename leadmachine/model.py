@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 FIELDS = [
     "name", "segment", "category", "website", "domain", "phone", "address", "city",
     "postal_code", "rating", "reviews", "hours_raw", "place_id", "source",
+    "site_text", "booking_link",
     # Ergebnis der Website-Prüfung
     "checked", "has_chatbot", "chatbot_name", "has_booking", "booking_name",
     "has_contact_form", "contact_url", "emergency_text",

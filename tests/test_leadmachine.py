@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from leadmachine import enrich, importers, scoring
+from leadmachine import enrich, importers, outreach, scoring
 from leadmachine.hours import analyse, parse_day
 
 
@@ -13,6 +13,10 @@ class HoursTest(unittest.TestCase):
     def test_24h_and_closed(self):
         self.assertEqual(parse_day("08:00–17:00"), (8, 17))
         self.assertEqual(parse_day("Geschlossen"), "closed")
+
+    def test_24h_and_pause(self):
+        self.assertEqual(parse_day("['Open 24 hours']"), (0.0, 24.0))
+        self.assertEqual(parse_day("['7am-12pm', '1pm-5pm']"), (7, 17))
 
     def test_week_json_and_pipe(self):
         raw = json.dumps({"Monday": "7AM-4PM", "Saturday": "Closed", "Sunday": "Closed"})
@@ -51,6 +55,12 @@ class PipelineTest(unittest.TestCase):
     def test_chatbot_penalty(self):
         info = enrich.analyse_html("<script src='https://embed.tawk.to/x'></script>", "https://x.de")
         self.assertEqual(info["has_chatbot"], "ja")
+
+    def test_template(self):
+        text = outreach.form_message(self.leads[0], "https://demo.example/x")
+        self.assertIn("https://demo.example/x", text)
+        self.assertIn("Assistent von Elektro Müller GmbH", text)
+        self.assertIn("Nein danke", text)
 
     def test_intent(self):
         self.assertGreaterEqual(scoring.score_intent(["demo_gestartet", "preisfrage", "termin_gebucht"]), 60)

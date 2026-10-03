@@ -49,8 +49,8 @@ def cmd_export(a):
     for l in leads:
         demo = links.get(l["domain"], "{DEMO-LINK}")
         rows.append({**l, "demo_url": demo,
-                     "formular_text": outreach.form_message(l, demo, a.absender),
-                     "anruf_einstieg": outreach.call_opener(l).replace("{name}", a.absender)})
+                     "formular_text": outreach.form_message(l, demo),
+                     "anruf_einstieg": outreach.call_opener(l, a.absender)})
     write_csv(OUT_DIR / "ansprache.csv", rows,
               ["name", "tier", "score", "phone", "website", "contact_url", "demo_url",
                "pitch", "reasons", "formular_text", "anruf_einstieg"])
@@ -60,7 +60,23 @@ def cmd_export(a):
 def cmd_intent(a):
     by_company: dict[str, list[str]] = {}
     for r in read_csv(a.datei):
-        by_company.setdefault(r["firma"], []).append(r["ereignis"])
+        firma = r["firma"]
+        if "ereignis" in r:  # Format 1: eine Zeile je Ereignis
+            by_company.setdefault(firma, []).append(r["ereignis"])
+            continue
+        # Format 2: eine Zeile je Firma mit Zahlen aus dem Demo-Bot
+        msgs = int(float(r.get("nachrichten") or 0))
+        events = by_company.setdefault(firma, [])
+        if msgs >= 1:
+            events.append("demo_gestartet")
+        if msgs >= 6:
+            events.append("mehr_als_5_nachrichten")
+        if int(float(r.get("tage_aktiv") or 0)) >= 2:
+            events.append("wiederholter_besuch")
+        if (r.get("antwort") or "").lower() == "ja":
+            events.append("email_geantwortet")
+        if (r.get("termin") or "").lower() == "ja":
+            events.append("termin_gebucht")
     ranked = sorted(((scoring.score_intent(ev), f) for f, ev in by_company.items()), reverse=True)
     rows = [{"firma": f, "interesse": s, "aktion": "ANRUFEN" if s >= scoring.CALL_AT else "weiter automatisch"}
             for s, f in ranked]
@@ -102,14 +118,14 @@ def main(argv=None):
                             ("pipeline", cmd_pipeline, "prüfen + bewerten + exportieren")):
         s = sub.add_parser(name, help=help_)
         s.add_argument("--tiers", default="AB")
-        s.add_argument("--absender", default="Ihr Name")
+        s.add_argument("--absender", default="Paul")
         s.add_argument("--demo-links", default="data/demo_links.csv")
         if name == "pipeline":
             s.add_argument("--delay", type=float, default=1.0)
         s.set_defaults(fn=fn)
 
     s = sub.add_parser("intent", help="Anrufliste aus Demo-Bot-Ereignissen")
-    s.add_argument("datei", help="CSV mit Spalten firma,ereignis")
+    s.add_argument("datei", help="CSV: firma,ereignis ODER firma,nachrichten[,tage_aktiv,antwort,termin]")
     s.set_defaults(fn=cmd_intent)
 
     a = p.parse_args(argv)

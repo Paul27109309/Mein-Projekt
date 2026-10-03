@@ -66,12 +66,23 @@ def _hour24(h: int, m: str | None, marker: str | None) -> float:
 
 
 def parse_day(text: str):
-    """Liefert (öffnet, schließt) als Dezimalstunden, 'closed' oder None."""
+    """Liefert (öffnet, schließt) als Dezimalstunden, 'closed' oder None.
+
+    Bei mehreren Zeitfenstern (z. B. Mittagspause) zählt das letzte Ende.
+    """
     if _CLOSED.search(text):
         return "closed"
-    m = _RANGE.search(text)
-    if not m:
+    if re.search(r"24 hours|24 stunden|rund um die uhr", text, re.I):
+        return 0.0, 24.0
+    matches = list(_RANGE.finditer(text))
+    if not matches:
         return None
+    first, last = _range_to_hours(matches[0]), _range_to_hours(matches[-1])
+    return first[0], last[1]
+
+
+def _range_to_hours(m) -> tuple[float, float]:
+    """Ein Zeitfenster-Treffer als (öffnet, schließt)."""
     oh, om, oam, ch, cm, cam = m.groups()
     close = _hour24(int(ch), cm, cam)
     if oam:

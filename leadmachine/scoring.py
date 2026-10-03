@@ -3,6 +3,7 @@
 Alle Gewichte stehen hier oben und lassen sich nach den ersten echten
 Gesprächen anpassen.
 """
+from .enrich import EMERGENCY
 from .hours import analyse
 
 TIER_A = 70
@@ -50,13 +51,15 @@ def score_fit(lead: dict) -> tuple[int, list[str]]:
         if h["weekend_closed"]:
             add(10, "am Wochenende geschlossen")
 
+    # Notdienst/24h: aus der Website-Prüfung oder aus Titel/Beschreibung der Liste
+    emergency = lead.get("emergency_text") == "ja" or bool(EMERGENCY.search(lead.get("site_text", "")))
+    if emergency:
+        add(10, "wirbt mit Notdienst/24h: Telefon rund um die Uhr wäre Gold wert")
     if lead.get("checked") == "ja":
         if lead["has_chatbot"] == "nein":
             add(15, "kein Chatbot auf der Website")
         else:
             add(-25, f"hat schon einen Chatbot ({lead['chatbot_name']})")
-        if lead["emergency_text"] == "ja":
-            add(10, "wirbt mit Notdienst/24h: Telefon rund um die Uhr wäre Gold wert")
         if lead["has_contact_form"] == "ja":
             add(5, "Kontaktformular vorhanden (erlaubter Erstkontakt)")
     return max(0, min(100, pts)), why

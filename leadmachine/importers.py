@@ -1,5 +1,8 @@
 """CSV (Outscraper oder eigene Liste) in das gemeinsame Format bringen."""
+from pathlib import Path
+
 from .model import FIELDS, domain_of, read_csv
+from .xlsx import read_xlsx
 
 ALIASES = {
     "name": ["name", "title", "firma", "company"],
@@ -13,17 +16,23 @@ ALIASES = {
     "reviews": ["reviews", "reviews_count", "userratingcount", "rezensionen"],
     "hours_raw": ["working_hours", "working_hours_old_format", "opening_hours", "oeffnungszeiten"],
     "place_id": ["place_id", "google_id", "id"],
+    "booking_link": ["booking_appointment_link", "reservation_links"],
 }
+# Outscraper liefert Titel und Beschreibung der Website gleich mit
+TEXT_COLUMNS = ["website_title", "website_description"]
 
 SEGMENTS = {
     "handwerk": [
         "elektr", "sanitär", "sanitaer", "heizung", "klempner", "dachdeck", "maler",
         "schreiner", "tischler", "installat", "handwerk", "fliesen", "zimmer", "gartenbau",
         "schlosser", "glaser", "klima", "bauunternehmen", "metallbau", "trockenbau",
+        "plumber", "heating", "hvac", "air conditioning", "electrician", "roofing",
+        "roofer", "painter", "carpent", "locksmith", "drainage", "contractor", "shk",
     ],
     "praxis": [
         "zahn", "arzt", "ärzt", "praxis", "physio", "kieferorth", "orthop", "heilprakt",
         "tierarzt", "dermatolog", "hno", "augenarzt", "gynäkolog", "kinderarzt", "psycho",
+        "dentist", "physician", "doctor", "physiotherap", "orthodont", "clinic", "veterinar",
     ],
 }
 
@@ -46,6 +55,13 @@ def normalize(row: dict, source: str) -> dict | None:
                 break
     if not out["name"]:
         return None
+    # geschlossene Betriebe und Ketten überspringen
+    status = low.get("business_status", "OPERATIONAL").upper()
+    if status not in ("", "OPERATIONAL", "NONE") or low.get("chain_info.chain") == "1":
+        return None
+    out["site_text"] = " ".join(low.get(c, "") for c in TEXT_COLUMNS).strip()
+    if out["booking_link"] in ("None", "[]"):
+        out["booking_link"] = ""
     if out["website"] and "://" not in out["website"]:
         out["website"] = "https://" + out["website"]
     out["domain"] = domain_of(out["website"])
@@ -70,5 +86,6 @@ def merge(existing: list[dict], new: list[dict]) -> tuple[list[dict], int]:
 
 
 def import_file(path: str, source: str = "import") -> list[dict]:
-    rows = [normalize(r, source) for r in read_csv(path)]
+    raw = read_xlsx(path) if Path(path).suffix.lower() in (".xlsx", ".xlsm") else read_csv(path)
+    rows = [normalize(r, source) for r in raw]
     return [r for r in rows if r]

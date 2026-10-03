@@ -16,8 +16,8 @@ Firmen finden → Website prüfen → Passung bewerten → BotBuildr-Upload → 
 **1. Firmen finden** (eine der beiden Möglichkeiten)
 
 ```bash
-# a) Outscraper-Export (CSV) einlesen
-python3 -m leadmachine import meine_outscraper_liste.csv
+# a) Outscraper-Export (XLSX oder CSV) einlesen
+python3 -m leadmachine import Berlin_-_SHK.xlsx
 
 # b) direkt über Google Places suchen (braucht einen API-Schlüssel, siehe unten)
 export GOOGLE_PLACES_API_KEY=dein_schluessel
@@ -30,26 +30,27 @@ python3 -m leadmachine search --branche "Elektriker" --stadt "München" --max 60
 python3 -m leadmachine pipeline --absender "Dein Name"
 ```
 
-Das erzeugt zwei Dateien im Ordner `out/`:
+Die Website-Prüfung (`enrich`) braucht Internetzugang und läuft bei dir zu Hause. Ohne sie sind die Werte vorläufig. Es entstehen zwei Dateien im Ordner `out/`:
 
 | Datei | Inhalt |
 |---|---|
 | `botbuildr_upload.csv` | Liste der besten Firmen (Name und Website) für den CSV-Upload in BotBuildr |
-| `ansprache.csv` | je Firma: Score, Begründung, Telefon, Kontaktformular-Link und fertiger Text |
+| `ansprache.csv` | je Firma: Score, Begründung, Telefon, Kontaktformular-Link und fertiger Text (aus `templates/`, dort kannst du ihn ändern) |
 
 **3. Demo-Links zurückspielen.** BotBuildr baut je Firma einen Demo-Bot. Lege eine Datei
 `data/demo_links.csv` mit den Spalten `website,demo_url` an und führe `python3 -m leadmachine export` erneut aus.
 Dann steht der richtige Link in jedem Text.
 
-**4. Interesse messen.** Sobald BotBuildr (oder n8n) Ereignisse liefert, schreibe sie in eine CSV
-mit den Spalten `firma,ereignis`. Dann:
+**4. Interesse messen.** Trage aus BotBuildr je Firma die Zahlen in eine CSV ein:
+`firma,nachrichten,tage_aktiv,antwort,termin` (`antwort` und `termin` mit `ja` oder `nein`).
+Alternativ geht eine Zeile je Ereignis mit den Spalten `firma,ereignis`. Dann:
 
 ```bash
 python3 -m leadmachine intent signals.csv
 ```
 
 Ergebnis: `out/anrufliste.csv`. Bei 60 Punkten oder mehr steht dort **ANRUFEN**.
-Erlaubte Ereignisse: `demo_gestartet`, `mehr_als_5_nachrichten`, `preisfrage`,
+Erlaubte Ereignisse (zweites Format): `demo_gestartet`, `mehr_als_5_nachrichten`, `preisfrage`,
 `wiederholter_besuch`, `email_geantwortet`, `termin_gebucht`, `abmeldung`.
 
 ## Wie bewertet wird

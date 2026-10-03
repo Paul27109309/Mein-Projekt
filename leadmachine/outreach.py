@@ -1,28 +1,20 @@
-"""Texte für die Ansprache (Kontaktformular) und den Anruf."""
+"""Texte für die Ansprache (aus templates/) und den Anruf."""
+from pathlib import Path
 
-TIMING = {
-    "praxis": "während der Behandlungszeiten und nach Feierabend",
-    "handwerk": "wenn Sie auf der Baustelle sind oder nach Feierabend",
-    "sonstige": "außerhalb Ihrer Öffnungszeiten",
-}
+TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 
 
-def form_message(lead: dict, demo_url: str, sender: str) -> str:
-    when = TIMING.get(lead["segment"], TIMING["sonstige"])
+def form_message(lead: dict, demo_url: str) -> str:
+    """Text je Branche aus templates/<segment>.txt; Platzhalter {firma} und {demo_url}."""
+    path = TEMPLATE_DIR / f"{lead['segment']}.txt"
+    if not path.exists():
+        path = TEMPLATE_DIR / "sonstige.txt"
+    return path.read_text(encoding="utf-8").format(firma=lead["name"], demo_url=demo_url)
+
+
+def call_opener(lead: dict, sender: str) -> str:
     return (
-        f"Guten Tag,\n\n"
-        f"ich habe mir die Website von {lead['name']} angesehen und dazu einen kleinen "
-        f"KI-Assistenten vorbereitet, der Anfragen beantwortet, {when}. "
-        f"Sie können ihn hier ohne Anmeldung ausprobieren: {demo_url}\n\n"
-        f"Wenn Sie das interessiert, antworten Sie mir gern kurz. "
-        f"Wenn nicht, genügt eine Zeile, dann melde ich mich nicht wieder.\n\n"
-        f"Freundliche Grüße\n{sender}"
-    )
-
-
-def call_opener(lead: dict) -> str:
-    return (
-        f"Guten Tag, hier ist {{name}}. Ich habe für {lead['name']} einen Demo-Assistenten "
+        f"Guten Tag, hier ist {sender}. Ich habe für {lead['name']} einen Demo-Assistenten "
         f"gebaut und wollte kurz fragen, ob Sie ihn schon ausprobieren konnten. "
         f"Haben Sie zwei Minuten?"
     )

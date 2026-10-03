@@ -1,0 +1,27 @@
+Guten Tag,
+
+ich habe mir Ihre Website angesehen. Einen digitalen Assistenten habe ich dort nicht gefunden, also habe ich Ihnen einen gebaut.
+
+Machen Sie den Test: Tun Sie kurz so, als wären Sie Ihr eigener Kunde. Stellen Sie die Frage, die Sie jede Woche zehnmal beantworten, oder buchen Sie den Termin, den Sie sonst am Telefon ausmachen:
+{demo_url}
+
+So klingt das dann:
+
+Guten Tag! Ich bin der Assistent von {firma}. Wie kann ich helfen?
+Unsere Heizung macht komische Geräusche. Kann jemand vorbeikommen?
+Das schauen wir uns gern an. Morgen um 10:00 Uhr wäre ein Termin frei, oder Donnerstag nachmittags. Was passt Ihnen besser?
+Morgen um 10 passt. Weber, Hauptstraße 12.
+Eingetragen: morgen, 10:00 Uhr. Sie bekommen gleich eine Bestätigung per E-Mail. Bis morgen!
+
+Er kennt Ihre Leistungen. Termine trägt er direkt in Ihren Kalender ein, auch abends und am Wochenende.
+
+Kurz zu mir: Ich bin Paul von Botwerk-agents. Wir richten solche Assistenten für Betriebe ein. Mehr über uns: www.botwerk-agents.de
+
+Wenn Ihnen gefällt, was Sie sehen: Antworten Sie einfach auf diese Nachricht. Wenn nicht, genügt ein "Nein danke", dann melde ich mich nicht mehr.
+
+An Ihrer Website habe ich nichts verändert, die Demo zeigt sie nur in einer Vorschau. Der Testzugang löscht sich nach ein paar Wochen von selbst.
+
+Paul Bayer
+Botwerk-agents
+Eckenerweg 5, 73575 Leinzell
+info@botwerk-agents.de
