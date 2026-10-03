@@ -1,0 +1,5 @@
+name,site,phone,full_address,city,postal_code,category,rating,reviews,working_hours
+Elektro Müller GmbH,https://elektro-mueller-beispiel.de,+49 89 1234567,"Musterstr. 1, 80331 München",München,80331,Elektriker,4.7,86,"{""Monday"": ""7AM-4PM"", ""Tuesday"": ""7AM-4PM"", ""Wednesday"": ""7AM-4PM"", ""Thursday"": ""7AM-4PM"", ""Friday"": ""7AM-3PM"", ""Saturday"": ""Closed"", ""Sunday"": ""Closed""}"
+Zahnarztpraxis Dr. Beispiel,praxis-beispiel.de,089 7654321,"Hauptstr. 5, 80331 München",München,80331,Zahnarzt,4.2,140,"Montag: 08:00–17:00 | Dienstag: 08:00–17:00 | Mittwoch: 08:00–13:00 | Donnerstag: 08:00–18:00 | Freitag: 08:00–13:00 | Samstag: Geschlossen | Sonntag: Geschlossen"
+Bauer Dachdeckerei,,089 111222,"Dorfweg 2, München",München,80333,Dachdecker,5.0,2,
+Autohaus Groß AG,https://autohaus-gross-beispiel.de,089 999000,"Ring 9, München",München,80335,Autohaus,4.0,900,"{""Monday"": ""8AM-7PM"", ""Saturday"": ""9AM-2PM"", ""Sunday"": ""Closed""}"
